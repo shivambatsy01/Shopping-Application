@@ -5,9 +5,9 @@ namespace Catalog.API.Database.Database
 {
     public class CatalogContext : ICatalogDbContext
     {
-        public IMongoClient mongoClient;
+        private IMongoClient mongoClient;
+        private IMongoDatabase mongoDatabase;
         public IMongoCollection<Product> Products { get; }
-        public IMongoDatabase mongoDatabase { get; }
 
 
         public CatalogContext(IConfiguration configuration)  //dependency injection for configuration
@@ -21,17 +21,16 @@ namespace Catalog.API.Database.Database
             Products = mongoDatabase.GetCollection<Product>(collectionName);
         }
 
-        public async Task<IEnumerable<Product>> GetProducts()
-        {
-            //var products = Products.Find(null);
-            //var products = await mongoDatabase.GetCollection<Product>("Products").Find(x => true).ToListAsync();
-            var products = await Products.FindAsync(x => true);
-            //return products;
-            return new List<Product>();
-        }
 
 
-        public async void SeedData()
+
+
+
+
+        //----------------------------------------------------------------------------------------------------
+        //-------------------------------used for initial data seeding----------------------------------------
+
+        public async void SeedData()  //used for initial data seed
         {
             bool exist = Products.Find(x => true).Any();
             await Products.InsertManyAsync(seedData);
